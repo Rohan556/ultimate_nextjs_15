@@ -16,8 +16,14 @@ import React from "react";
 
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
+import dynamic from "next/dynamic";
+
+const Editor = dynamic(() => import("@/components/editor"), {
+  ssr: false,
+});
 
 const QuestionForm = () => {
+  const editorRef = React.useRef(null);
   const form = useForm({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
@@ -65,7 +71,13 @@ const QuestionForm = () => {
               <FormLabel className="paragraph-semibold text-dark400_light800">
                 Question Content <span className="text-primary-500">*</span>
               </FormLabel>
-              <FormControl></FormControl>
+              <FormControl>
+                <Editor
+                  editorRef={editorRef}
+                  value={field.value}
+                  fieldChange={field.onChange}
+                />
+              </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
                 Introduce the problem and expand on what you have put in the
                 title
