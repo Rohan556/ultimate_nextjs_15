@@ -1,6 +1,6 @@
 "use client";
 
-import { AskQuestionSchema } from "@/lib/validations";
+import { AskQuestionSchema, AskQuestionSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -17,6 +17,8 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 import dynamic from "next/dynamic";
+import { z } from "zod";
+import TagCard from "../cards/TagCard";
 
 const Editor = dynamic(() => import("@/components/editor"), {
   ssr: false,
@@ -24,16 +26,41 @@ const Editor = dynamic(() => import("@/components/editor"), {
 
 const QuestionForm = () => {
   const editorRef = React.useRef(null);
-  const form = useForm({
+  const [tagEntered, setTagEntered] = React.useState<string[]>([]);
+  const form = useForm<z.infer<typeof AskQuestionSchema>>({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
       title: "",
       content: "",
-      tags: [],
+      tags: "",
     },
   });
 
-  const handleCreateQuestion = () => {};
+  const handleCreateQuestion = (data: z.infer<typeof AskQuestionSchema>) => {
+    console.log({ data });
+  };
+
+  const handleRemoveTag = (name: string) =>
+    setTagEntered((prev) => prev.filter((tag) => tag !== name));
+
+  const handleInputKeydown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log({});
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const value = event.currentTarget.value.trim();
+      if (value?.length < 15) {
+        setTagEntered((prev) => [...prev, value]);
+        event.currentTarget.value = "";
+        form.clearErrors("tags");
+        form.setValue("tags", "");
+      } else if (value?.length > 15) {
+        form.setError("tags", {
+          type: "maxLength",
+          message: "Tag must be less than 15 characters",
+        });
+      }
+    }
+  };
 
   return (
     <Form {...form}>
@@ -99,9 +126,19 @@ const QuestionForm = () => {
                   <Input
                     className="paragraph-regular no-focus background-light900_dark300 light-border-2 text-dark300_light700 min-h-[56px] rounded-1.5 border"
                     placeholder="Add tags"
+                    onKeyDown={(e) => handleInputKeydown(e)}
                     {...field}
                   />
-                  <p>Tags</p>
+                  <div className="flex-start mt-2.5 flex-wrap gap-2.5">
+                    {tagEntered.map((value) => (
+                      <TagCard
+                        key={value}
+                        name={value}
+                        isRemovableButton
+                        handleRemoveTag={handleRemoveTag}
+                      />
+                    ))}
+                  </div>
                 </div>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
