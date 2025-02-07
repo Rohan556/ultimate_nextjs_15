@@ -1,6 +1,6 @@
 "use client";
 
-import { AskQuestionSchema, AskQuestionSchema } from "@/lib/validations";
+import { AskQuestionSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
