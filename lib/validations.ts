@@ -34,3 +34,26 @@ export const AskQuestionSchema = z.object({
   content: z.string().min(1, { message: "Body is required" }),
   tags: z.string(),
 });
+
+export const UserSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Please enter a valid email address" }),
+
+  bio: z
+    .string()
+    .max(150, { message: "Bio must be at most 150 characters" })
+    .optional(),
+  image: z.string().optional(),
+  location: z.string().optional(),
+  portfolio: z
+    .string()
+    .url({ message: "Please provide a valid URL" })
+    .optional(),
+  reputation: z.number().optional(),
+});
