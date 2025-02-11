@@ -16,16 +16,10 @@ export class RequestError extends Error {
 
 export class ValidationError extends RequestError {
   constructor(fieldErrors: Record<string, string[]>) {
-    const message = ValidationError.formatMessage(fieldErrors);
+    const message = ValidationError.formFieldErrors(fieldErrors);
     super(400, message, fieldErrors);
     this.name = "ValidationError";
     this.errors = fieldErrors;
-  }
-
-  static formatMessage(fieldErrors: Record<string, string[]>) {
-    return Object.entries(fieldErrors)
-      .map(([field, errors]) => `${field}: ${errors.join(", ")}`)
-      .join("\n");
   }
 
   static formFieldErrors(errors: Record<string, string[]>) {
